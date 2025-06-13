@@ -1,0 +1,145 @@
+import React, { useEffect, useState, useRef } from 'react';
+import Box from '@mui/material/Box';
+import { Container, Paper } from '@mui/material';
+import Autocomplete from '@mui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import { Chart } from 'react-google-charts';
+
+export default function CountriesMap() {
+  const paperContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '90%',
+    margin: '20px auto 50px auto', 
+  };
+  const searchPaperStyle = { padding: '20px', width: '45%', marginBottom: '20px' };
+  const listPaperStyle = { padding: '20px', width: '90%' };
+  const mapPaperStyle = { padding: '20px', width: '90%' };
+
+  const [obiective, setObiective] = useState([]);
+  const [oras, setOras] = useState('');
+  const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState('');
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const mapRef = useRef(null);
+
+  const fetchData = () => {
+    setFetching(true);
+    fetch('http://localhost:8080/tara/getAll')
+      .then(res => res.json())
+      .then((result) => {
+        setObiective(result);
+        setFetching(false);
+        setError('');
+        setInitialDataLoaded(true);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setFetching(false);
+        setError('Error fetching data. Please try again.');
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleOrasChange = (e, value) => {
+    setOras(value);
+    if (!value) {
+      fetchData();
+      return;
+    }
+    setFetching(true);
+    fetch(`http://localhost:8080/tara/getAllByName?name=${value}`)
+      .then(res => res.json())
+      .then((result) => {
+        setObiective(result);
+        setFetching(false);
+        if (result.length === 0) {
+          setError('No attractions found for the entered city.');
+        } else {
+          setError('');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setFetching(false);
+        setError('Error fetching data. Please try again.');
+      });
+  };
+
+  const handleClear = () => {
+    setOras('');
+    setError('');
+    fetchData();
+  };
+
+  const countryOptions = ['Turkey', 'Romania', 'Marea Britanie', 'Franța', 'Germania', 'Italia', 'Spania'];
+
+  return (
+    <Box textAlign="center">
+      <Container maxWidth="xl" style={paperContainerStyle}>
+        <Paper elevation={3} style={searchPaperStyle}>
+          <h1 style={{ color: "1888ff", marginBottom: "20px" }}>SEARCH COUNTRY</h1>
+          <form noValidate autoComplete="off">
+            <Autocomplete
+              id="city-autocomplete"
+              options={countryOptions}
+              renderInput={(params) => (
+                <TextField {...params} label="Country name" variant="outlined" fullWidth style={{ marginBottom: '10px' }} />
+              )}
+              value={oras}
+              onChange={handleOrasChange}
+              onInputChange={(event, newInputValue) => {
+                if (newInputValue === '') {
+                  handleClear();
+                }
+              }}
+              freeSolo
+              autoHighlight
+            />
+          </form>
+          {error && oras && <p style={{ color: 'red' }}>{error}</p>}
+        </Paper>
+
+        {(initialDataLoaded || fetching) && (
+          <Paper elevation={3} style={listPaperStyle}>
+            {obiective.map(obiectiv => (
+              <Paper elevation={6} style={{ padding: "15px", margin: "10px auto", textAlign: "left" }} key={obiectiv.id}>
+                <div>
+                  Name: {obiectiv.name} <br />
+                  Continent: {obiectiv.continent} <br />
+                  Description: {obiectiv.descriere} <br />
+                  Gastronomy: {obiectiv.gastronomie} <br />
+                  Safety: {obiectiv.siguranta} <br />
+                  Rules: {obiectiv.reguli} <br />
+                </div>
+              </Paper>
+            ))}
+          </Paper>
+        )}
+
+        {oras && (
+          <Paper elevation={3} style={mapPaperStyle}>
+            <h1 style={{ color: '1888ff', marginBottom: '20px' }}>COUNTRY MAP</h1>
+            <Chart
+              width={'100%'}
+              height={'400px'}
+              chartType="GeoChart"
+              data={[
+                ['Country', 'Popularity'],
+                [oras, 100],
+              ]}
+              options={{
+                colorAxis: { colors: ['#810FCB'] },
+              }}
+              mapsApiKey="AIzaSyCHK16A91qWhNwiaS6G4pmzOFGfO1ITIpI"
+            />
+          </Paper>
+        )}
+      </Container>
+    </Box>
+  );
+}

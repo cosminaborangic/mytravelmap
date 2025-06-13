@@ -1,0 +1,23 @@
+:root {
+    --primary: #1888ff;
+    --btn-hover-color: #1356b0; /* Schimbarea culorii de fundal la hover */
+}
+
+.btn {
+    padding: 10px 24px; /* Puțin mai mult spațiu pentru text */
+    margin-left: -10px; /* Mută butonul puțin spre stânga, ajustabil */
+    border-radius: 6px; /* Colțuri mai rotunjite */
+    outline: none;
+    border: none;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+    background-color: var(--primary);
+    transition: background-color 0.3s, color 0.3s; /* Adaugă tranziții pentru hover */
+    white-space: nowrap; /* Previnea împărțirea textului pe două linii */
+}
+
+.btn:hover {
+    background-color: var(--btn-hover-color); /* Schimbarea culorii de fundal la hover */
+    color: #fff;
+}

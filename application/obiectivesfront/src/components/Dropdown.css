@@ -1,0 +1,47 @@
+.dropdown-menu {
+  background: red;
+  width: 200px; /* Lățimea inițială */
+  position: absolute;
+  top: 80px;
+  list-style: none;
+  text-align: start;
+  z-index: 9999; /* Asigură afișarea peste toate elementele */
+  border-radius: 10px; /* Adaugă colțuri rotunjite */
+  overflow: hidden; /* Asigură că colțurile rotunjite se aplică și la elementele interne */
+}
+
+.dropdown-menu li {
+  background: linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%);
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease; /* Adaugă tranziția pentru schimbarea culorii de fundal și a textului */
+}
+
+.dropdown-menu li:hover {
+  background: linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%);
+  color: #fff; /* Schimbă culoarea textului la hover, dacă este necesar */
+}
+
+.dropdown-menu.clicked {
+  display: none;
+}
+
+.dropdown-link {
+  display: block;
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  color: #fff;
+  padding: 16px; /* Padding inițial */
+  transition: background 0.3s ease, color 0.3s ease; /* Adaugă tranziția pentru schimbarea culorii textului */
+}
+
+.dropdown-link:hover {
+  background: linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%);
+  color: #fff; /* Schimbă culoarea textului la hover, dacă este necesar */
+}
+
+@media screen and (max-width: 960px) {
+  .fa-caret-down {
+    display: none;
+  }
+}
